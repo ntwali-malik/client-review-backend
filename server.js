@@ -9,7 +9,7 @@ connectDB()
 
 const app = express()
 app.use(cors({
-    origin: ['https://client-review-two.vercel.app/'],
+    origin: 'https://client-review-two.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }))
