@@ -10,7 +10,7 @@ const app = express()
 app.use(cors({
     origin: 'https://client-review-two.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
+    credentials: true  
 }))
 app.use(express.json())
 
