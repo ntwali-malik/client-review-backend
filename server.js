@@ -5,7 +5,6 @@ const connectDB = require('./config/db')
 const reviewRoutes = require('./routes/ReviewRoutes')
 
 dotenv.config()
-connectDB()
 
 const app = express()
 app.use(cors({
@@ -14,6 +13,16 @@ app.use(cors({
     credentials: true
 }))
 app.use(express.json())
+
+// Ensure database connection before handling routes
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        res.status(500).json({ error: 'Database connection failed' });
+    }
+});
 
 app.use('/api/reviews', reviewRoutes)
 
