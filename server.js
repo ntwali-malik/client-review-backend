@@ -7,6 +7,8 @@ const reviewRoutes = require('./routes/ReviewRoutes')
 dotenv.config()
 
 const app = express()
+
+// Basic middleware
 app.use(cors({
     origin: 'https://client-review-two.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -14,17 +16,45 @@ app.use(cors({
 }))
 app.use(express.json())
 
-// Ensure database connection before handling routes
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
+
+// Database connection middleware
 app.use(async (req, res, next) => {
     try {
         await connectDB();
         next();
     } catch (error) {
-        res.status(500).json({ error: 'Database connection failed' });
+        console.error('Database connection error:', error);
+        return res.status(500).json({ 
+            error: 'Database connection failed',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 });
 
+// Routes
 app.use('/api/reviews', reviewRoutes)
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ 
+        error: 'Something went wrong!',
+        details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ error: 'Not Found' });
+});
+
 const PORT = process.env.PORT || 5000
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
+}
+
+module.exports = app; // Export for serverless use
