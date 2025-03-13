@@ -10,7 +10,7 @@ const app = express()
 
 // Basic middleware
 app.use(cors({
-    origin: 'https://client-review-two.vercel.app',
+    origin: 'https://client-review-frontend.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true  
 }))
